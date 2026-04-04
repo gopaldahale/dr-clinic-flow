@@ -1,1 +1,24 @@
 @import "tailwindcss";
+
+@theme {
+    --font-heading: 'Montserrat', sans-serif;
+    --font-body: 'Roboto', sans-serif;
+}
+
+* {
+    font-family: var(--font-heading);
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+@utility animate-shimmer {
+    animation: shimmer 4s linear infinite;
+}

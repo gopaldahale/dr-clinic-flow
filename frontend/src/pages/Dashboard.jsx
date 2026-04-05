@@ -1,4 +1,6 @@
 import React from 'react'
+import PatientDashboard from '../components/PatientDashboard'
+import DoctorDashboard from '../components/DoctorDashboard'
 
 const Dashboard = () => {
 
@@ -9,11 +11,11 @@ const Dashboard = () => {
     <>
       hi,
       {currentUser.role === "patient" && (
-        <p className="mt-4">You are logged in as Patient 👤</p>
+        <PatientDashboard />
       )}
 
       {currentUser.role === "doctor" && (
-        <p className="mt-4">You are logged in as Doctor 👨‍⚕️</p>
+        <DoctorDashboard />
       )}
     </>
   )

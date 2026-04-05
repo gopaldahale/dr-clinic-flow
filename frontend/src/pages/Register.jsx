@@ -24,7 +24,7 @@ export const Register = () => {
       return;
     }
 
-    const registerData = { ...userData }
+    // const registerData = { ...userData }
     // Local storage user 
     const existingUsers = JSON.parse(localStorage.getItem("users")) || [];
     const userExists = existingUsers.find(

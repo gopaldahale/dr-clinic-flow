@@ -7,6 +7,9 @@ import Dashboard from "./pages/Dashboard.jsx";
 import PrivateRoutes from "./routes/PrivateRoute.jsx";
 import PublicRoute from "./routes/PublicRoutes.jsx";
 import { useState } from "react";
+import PatientDashboardPage from "./pages/PatientDashboardPage";
+import DoctorDashboardPage from "./pages/DoctorDashboardPage";
+import MyAppointments from './pages/MyAppointments.jsx'
 
 const App = () => {
 
@@ -17,7 +20,9 @@ const App = () => {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
         <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
-        <Route path="/dashboard" element={<PrivateRoutes><Dashboard /></PrivateRoutes>} />
+        <Route path="/patient-dashboard" element={ <PrivateRoutes> <PatientDashboardPage /> </PrivateRoutes> } />
+        <Route path="/doctor-dashboard" element={ <PrivateRoutes> <DoctorDashboardPage /> </PrivateRoutes> } />
+        <Route path="/my-appointments" element={ <PrivateRoutes> <MyAppointments /> </PrivateRoutes> } />
       </Routes>
     </>
   )

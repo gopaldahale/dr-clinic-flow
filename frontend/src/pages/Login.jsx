@@ -29,7 +29,12 @@ const Login = ({ setUserIn }) => {
     if (loggedInUser) {
       // localStorage.setItem("isUserLoggedIn", "true");
       localStorage.setItem("loggedInUser", JSON.stringify(loggedInUser));
-      navigate("/dashboard");
+      // navigate("/dashboard");
+      if (loggedInUser.role === "patient") {
+        navigate("/patient-dashboard");
+      } else {
+        navigate("/doctor-dashboard");
+      }
       setTimeout(() => {
         alert('User logged in!')
       }, 700)

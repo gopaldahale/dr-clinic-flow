@@ -1,19 +1,22 @@
 import React from 'react'
 import logo from '../assets/hospitallogo2.PNG'
 import { Link, useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 
-const Navbar = ({ userLogState, setUserIn }) => {
-
+const Navbar = () => {
+    const { user, logout } = useAuth();
     // style 
     const menuLink = "text-sm font-medium text-[#3a6080] px-4 py-2 hover:bg-[#edf5fb] hover:text-[#1a6fa8] cursor-pointer"
 
     const navigate = useNavigate();
 
-    const isUserLoggedIn = JSON.parse(localStorage.getItem('loggedInUser'))
-
-    const handleLogout = () => {
-        localStorage.removeItem("loggedInUser")
-        navigate('/login');
+    const handleLogout = async () => {
+        try {
+            await logout();
+            navigate('/login');
+        } catch (error) {
+            console.error("Logout failed", error);
+        }
     }
 
     return (
@@ -39,15 +42,15 @@ const Navbar = ({ userLogState, setUserIn }) => {
                 <Link to="/" className={menuLink}>
                     Home
                 </Link>
-                {isUserLoggedIn?.role === "patient" && (
+                {user?.role === "patient" && (
                     <>
                         <Link to="/my-appointments" className={menuLink}> My Appointments </Link>
                     </>
                 )}
 
-                {isUserLoggedIn ?
+                {user ?
                     (<>
-                        <Link to={isUserLoggedIn?.role === "doctor" ? "/doctor-dashboard" : "/patient-dashboard"} className={menuLink}>Dashboard</Link>
+                        <Link to={user?.role === "doctor" ? "/doctor-dashboard" : "/patient-dashboard"} className={menuLink}>Dashboard</Link>
                         <div className="w-px h-5 bg-[#dce8f0] mx-2" />
                         <button onClick={handleLogout} className="text-sm font-medium text-white px-4 py-2 ml-5 rounded-lg bg-red-700 shadow-[0_3px_10px_rgba(26,111,168,0.3)] hover:shadow-[0_4px_14px_rgba(26,111,168,0.4)] cursor-pointer">
                             Logout

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios"
 
 export const Register = () => {
   // style
@@ -17,29 +18,27 @@ export const Register = () => {
     setUserData({ ...userData, [e.target.name]: e.target.value });
   }
 
-  const handleRegisterSubmit = (e) => {
+  const handleRegisterSubmit = async (e) => {
     e.preventDefault();
     if (!username.trim() || !email.trim() || !password.trim()) {
       alert("Please fill data");
       return;
     }
 
-    // const registerData = { ...userData }
-    // Local storage user 
-    const existingUsers = JSON.parse(localStorage.getItem("users")) || [];
-    const userExists = existingUsers.find(
-      (user) => user.email === userData.email
-    );
-    if (userExists) {
-      alert("User already exists!");
-      return;
+    try {
+      const res = await axios.post('http://localhost:5000/api/auth/register', { username, password, email, role })
+
+      console.log(res)
+
+      setTimeout(() => {
+        alert("Registered successfully ✅");
+        navigate("/login")
+      }, 600)
+
+    } catch (error) {
+      alert(error.response?.data?.message || "Registration failed ❌");
     }
-    existingUsers.push(userData);
-    localStorage.setItem("users", JSON.stringify(existingUsers));
-    setTimeout(() => {
-      alert("Registered successfully ✅");
-      navigate("/login")
-    }, 600)
+
   }
   return (
     <div className="flex justify-center items-center mt-20">

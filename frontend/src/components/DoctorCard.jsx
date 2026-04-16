@@ -1,4 +1,5 @@
 import React from 'react'
+import BookingModal from './BookingModal';
 
 const DoctorCard = ({ doctor, handleBooking }) => {
     // style
@@ -62,7 +63,8 @@ const DoctorCard = ({ doctor, handleBooking }) => {
                     <span className={styles.reviewCount}>{doctor.rating} · {doctor.reviews} reviews</span>
                 </div> */}
 
-                <button className={styles.button} onClick={()=>handleBooking(doctor)}>Book Appointment</button>
+                {/* <button className={styles.button} onClick={()=>handleBooking(doctor)}>Book Appointment</button> */}
+                <BookingModal doctor={doctor} />
         </div>
 
         </div >

@@ -1,48 +1,31 @@
 import React from 'react'
 import doctors from '../data/doctors'
 import DoctorCard from './DoctorCard'
+import axios from 'axios'
+
 
 const PatientDashboard = () => {
 
-  const handleBooking = (doctor) => {
+  const handleBookAppointment = async (e) => {
+    e.preventDefault();
 
-    const currentUser = JSON.parse(localStorage.getItem("loggedInUser"))
+    try {
 
-    const appointment = {
-      id: Date.now(),
-      patientName: currentUser.username,
-      patientEmail: currentUser.email,
-      doctorName: doctor.name,
-      doctorEmail: doctor.email,
-      specialization: doctor.specialization,
-      date: new Date().toLocaleString(),
-      status: "pending"
+    } catch (error) {
+
     }
-    // Get existing appointments
-    const existing = JSON.parse(localStorage.getItem("appointments")) || [];
-
-    const existingAppointment = existing.find(
-      (user) => user.patientEmail == appointment.patientEmail && user.doctorEmail == appointment.doctorEmail
-    )
-
-    if (existingAppointment) return (alert('Appointment already taken!'));
-
-    // Add new appointment
-    const updated = [...existing, appointment];
-
-    localStorage.setItem("appointments", JSON.stringify(updated))
-
-    alert("Appointment booked ✅");
   }
 
   return (
     <> Patient Dashboard
       <div className='grid grid-cols-3 gap-6 w-max mx-auto my-10'>
         {doctors.map((docData) =>
-          <DoctorCard key={docData.id} doctor={docData} handleBooking={handleBooking} />
+          <DoctorCard key={docData.id} doctor={docData} handleBooking={handleBookAppointment} />
         )}
 
       </div>
+
+
     </>
   )
 }

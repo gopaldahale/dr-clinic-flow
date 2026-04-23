@@ -1,91 +1,83 @@
+import axios from 'axios'
 import React, { useEffect, useState } from 'react'
+import { useAuth } from '../context/AuthContext'
+import dayjs from 'dayjs';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
+
+// 1. Load the plugin
+dayjs.extend(customParseFormat);
 
 const DoctorDashboard = () => {
-  const [appointments, setAppointments] = useState([]);
-  const [doctorData, setDoctorData] = useState([]);
+
+  const { user } = useAuth()
+  const [patientAppt, setPatientAppt] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  const fetchPatientAppt = async () => {
+    try {
+      setLoading(true)
+      const res = await axios.get('http://localhost:5000/api/appointments/doctor-appointment', { withCredentials: true })
+      // console.log("API DATA:", res.data)
+      setPatientAppt(res.data)
+    } catch (error) {
+      console.error(error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const updateSatus = async (id, status) => {
+    try {
+      await axios.patch(`http://localhost:5000/api/appointments/${id}/status`, { status }, { withCredentials: true })
+      fetchPatientAppt();
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   useEffect(() => {
-    const storedAppointments = JSON.parse(localStorage.getItem("appointments") || "[]");
-
-    const currentDoctor = JSON.parse(localStorage.getItem("loggedInUser"))
-
-    setDoctorData(currentDoctor)
-
-    const getCurrentDocAppointments = storedAppointments.filter(
-      (doctor) => doctor.doctorEmail === currentDoctor.email
-    )
-    setAppointments(getCurrentDocAppointments)
+    fetchPatientAppt()
   }, [])
 
-  // console.log(doctorData)
-
-  const handleStatus = (index, newStatus) => {
-    const allAppointments = JSON.parse(localStorage.getItem("appointments")) || [];
-
-    const currentDoctor = JSON.parse( localStorage.getItem("loggedInUser") );
-
-    // update correct appointment
-    const updatedAppointments = allAppointments.map((appt) => {
-      if (
-        appt.doctorEmail === currentDoctor.email &&
-        appt.patientEmail === appointments[index].patientEmail &&
-        appt.date === appointments[index].date
-      ) {
-        return { ...appt, status: newStatus };
-      }
-      return appt;
-    });
-
-    localStorage.setItem(
-      "appointments",
-      JSON.stringify(updatedAppointments)
-    );
-
-    // update UI
-    setAppointments(
-      updatedAppointments.filter(
-        (appt) => appt.doctorEmail === currentDoctor.email
-      )
-    );
-  };
   return (
     <>
       <div className="p-6">
         <h1 className="text-2xl font-bold mb-6 text-center">
-          Doctor <span className='text-red-400'>{doctorData.username?.toUpperCase()}</span> Dashboard 👨‍⚕️
+          Dr. <span className='text-red-400'>{(user.username).charAt(0).toUpperCase() + (user.username).slice(1).toLowerCase()}</span> Dashboard 👨‍⚕️
         </h1>
 
-        {appointments.length === 0 ? (
+        {patientAppt.length === 0 ? (
           <p className="text-center text-gray-500">
             No appointments yet
           </p>
         ) : (
           <div className="space-y-4">
-            {appointments.map((appt, index) => (
+            {patientAppt.map((appt, index) => (
               <div key={index} className="border p-4 rounded shadow">
                 <h2 className="font-bold">
-                  <span className='font-light'>Patient</span> {appt.patientName}
+                  <span className='font-light'>Patient</span> <span className='capitalize'>{appt.patient.username}</span>
                 </h2>
-                <p>{appt.patientEmail}</p>
-                <p className="text-sm text-gray-500">{appt.date}</p>
+                <p>{appt.patient.email}</p>
+                <p className="text-sm text-gray-500">{new Date(appt.date).toDateString()}</p>
+                <p> {dayjs(appt.startTime, "HH:mm").format('h:mm A')} - {dayjs(appt.endTime, "HH:mm").format('h:mm A')} </p>
 
                 <p className="mt-2 font-semibold">
-                  Status: <span className={`${appt.status !== 'accepted' ? 'text-red-600' : 'text-green-600'}`}>{appt.status}</span>
+                  Status: <span className={`${appt.status !== 'confirmed' ? 'text-red-600' : 'text-green-600'} capitalize`}>{appt.status}</span>
                 </p>
 
                 <div className="mt-3 space-x-2">
                   <button
-                    onClick={() => handleStatus(index, "accepted")}
+                    onClick={() => updateSatus(appt._id, "confirmed")}
                     className="bg-green-600 text-white px-3 py-1 rounded"
                   >
-                    Accept
+                    Confirm
                   </button>
 
                   <button
-                    onClick={() => handleStatus(index, "rejected")}
+                    onClick={() => updateSatus(appt._id, "cancelled")}
                     className="bg-red-600 text-white px-3 py-1 rounded"
                   >
-                    Reject
+                    Cancel
                   </button>
                 </div>
               </div>

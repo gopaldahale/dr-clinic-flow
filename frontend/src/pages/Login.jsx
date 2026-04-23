@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import axios from "axios";
-import { useAuth } from '../context/AuthContext'
+import { useAuth, useDoctor } from '../context/AuthContext'
 
 const Login = () => {
   // style
@@ -11,6 +11,7 @@ const Login = () => {
   const submitBtnClass = "w-full text-white p-2 rounded";
 
   const { setUser } = useAuth();
+  // const { fetchDoctor } = useDoctor();
   const navigate = useNavigate();
 
   const [userLoginCredentials, setUserLoginCredentials] = useState({ email: '', password: '' })
@@ -33,6 +34,8 @@ const Login = () => {
       // 🔥 fetch current user after login
       const userRes = await axios.get(`${apiurl}/me`, { withCredentials: true })
       setUser(userRes.data.user);
+
+      // await fetchDoctor();
 
       if (userRes.data.user.role === "patient") {
         navigate("/patient-dashboard");

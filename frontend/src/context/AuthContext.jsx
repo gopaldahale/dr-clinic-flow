@@ -42,7 +42,8 @@ export const AuthProvider = ({ children }) => {
 }
 
 export const DoctorProvider = ({ children }) => {
-    const [doctors, setDoctors] = useState(null);
+    const [doctors, setDoctors] = useState([]);
+    const { user } = useAuth();
     const [loadingDoctors, setLoadingDoctors] = useState(true)
 
     const fetchDoctor = async () => {
@@ -58,11 +59,13 @@ export const DoctorProvider = ({ children }) => {
     }
 
     useEffect(() => {
-        fetchDoctor();
-    }, [])
+        if (user?.role === "patient") {
+            fetchDoctor();
+        }
+    }, [user]);
 
     return (
-        <DoctorProvider.Provider value={{ doctors, loadingDoctors }}>{children}</DoctorProvider.Provider>
+        <DoctorContext.Provider value={{ doctors, loadingDoctors, fetchDoctor }}>{children}</DoctorContext.Provider>
     );
 }
 

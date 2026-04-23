@@ -4,15 +4,15 @@ import axios from "axios"
 
 export const Register = () => {
   // style
-  const FormClass = "bg-white p-6 rounded shadow-md w-80";
+  const FormClass = "bg-white p-6 rounded shadow-md w-100";
   const h2Class = "text-2xl font-bold mb-4 text-center";
   const inputClass = "w-full mb-3 p-2 border rounded";
   const submitBtnClass = "w-full bg-gradient-to-br from-[#1a6fa8] to-[#38b2ac] text-white p-2 rounded hover:bg-blue-700";
 
   const navigate = useNavigate()
 
-  const [userData, setUserData] = useState({ username: '', email: '', password: '', role: 'patient' })
-  const { username, email, password, role } = userData
+  const [userData, setUserData] = useState({ username: '', email: '', password: '', role: 'patient', firstName: '', lastName: '' })
+  const { username, email, password, role, firstName, lastName } = userData
 
   const handleUserChange = (e) => {
     setUserData({ ...userData, [e.target.name]: e.target.value });
@@ -26,7 +26,12 @@ export const Register = () => {
     }
 
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/register', { username, password, email, role })
+      const res = await axios.post('http://localhost:5000/api/auth/register', {
+        username, password, email, role, profile: {
+          firstName,
+          lastName
+        }
+      })
 
       console.log(res)
 
@@ -44,6 +49,27 @@ export const Register = () => {
     <div className="flex justify-center items-center mt-20">
       <form className={FormClass} onSubmit={handleRegisterSubmit} >
         <h2 className={h2Class}>Register</h2>
+
+        <div className="grid grid-cols-2 gap-4">
+          <input
+            type="text"
+            name="firstName"
+            placeholder="Enter firstname"
+            className={inputClass}
+            value={firstName}
+            onChange={handleUserChange}
+          />
+
+          <input
+            type="text"
+            name="lastName"
+            placeholder="Enter lastname"
+            className={inputClass}
+            value={lastName}
+            onChange={handleUserChange}
+          />
+
+        </div>
 
         <input
           type="text"

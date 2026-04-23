@@ -1,7 +1,9 @@
 import React from 'react'
 import BookingModal from './BookingModal';
+import avatarimg from '../assets/profileavatar.png'
+import axios from 'axios';
 
-const DoctorCard = ({ doctor, handleBooking }) => {
+const DoctorCard = ({ doctors, appointments, fetchMyAppointments, setMyAppointments }) => {
     // style
     const styles = {
         card: `w-[260px] bg-white border border-gray-100 rounded-2xl overflow-hidden
@@ -37,35 +39,56 @@ const DoctorCard = ({ doctor, handleBooking }) => {
            rounded-lg transition-all duration-200`,
     };
 
+    const bookedAppointment = appointments?.find(
+        (appt) =>
+            (appt.doctor === doctors._id || appt.doctor?._id === doctors._id) &&
+            appt.status !== "cancelled"
+    );
+
+    const handleCancel = async (id) => {
+        try {
+            const response = await axios.patch(
+                `http://localhost:5000/api/appointments/${id}/status`,
+                { status: "cancelled" },
+                { withCredentials: true }
+            );
+
+            // if (response.status === 200) {
+            //     fetchMyAppointments();
+            // }
+            setMyAppointments(prev =>
+                prev.map(appt =>
+                    appt._id === id ? { ...appt, status: "cancelled" } : appt
+                )
+            );
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
     return (
         <div className={styles.card}>
 
             <div className={styles.imageWrapper}>
-                <img className={styles.image} src={doctor.image_url} alt={doctor.name} />
+                <img className={styles.image} src={`${doctors.image_url ? doctors.image_url : avatarimg}`} alt={doctors.username} />
                 <span className={styles.statusDot} />
             </div>
 
             <div className={styles.body}>
-                <span className={styles.badge}>{doctor.specialization}</span>
+                <span className={styles.badge}>{doctors.doctorInfo?.specialization}</span>
 
-                <h2 className={styles.name}>{doctor.name}</h2>
-
-                {/* <p className={styles.meta}>
-                    {doctor.experience} yrs exp
-                    <span className={styles.metaDot} />
-                    {doctor.qualification}
-                </p> */}
+                <h2 className={styles.name}>{doctors.username}</h2>
 
                 <hr className={styles.divider} />
 
-                {/* <div className={styles.ratingRow}>
-                    <span className={styles.stars}>★★★★★</span>
-                    <span className={styles.reviewCount}>{doctor.rating} · {doctor.reviews} reviews</span>
-                </div> */}
-
-                {/* <button className={styles.button} onClick={()=>handleBooking(doctor)}>Book Appointment</button> */}
-                <BookingModal doctor={doctor} />
-        </div>
+                {bookedAppointment ? (
+                    <button onClick={() => handleCancel(bookedAppointment._id)} className="w-auto py-1 px-2 bg-red-500 hover:bg-red-600 text-white rounded-lg">
+                        Cancel Appointment
+                    </button>
+                ) : (
+                    <BookingModal doctor={doctors} setMyAppointments={setMyAppointments} />
+                )}
+            </div>
 
         </div >
 

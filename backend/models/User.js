@@ -17,6 +17,9 @@ const addressSchema = new Schema({
 }, { _id: false });
 
 const profileSchema = new Schema({
+    firstName: { type: String, trim: true, default: "" },
+    lastName: { type: String, trim: true, default: "" },
+
     phone: { type: String, trim: true },
     gender: { type: String, enum: ["male", "female", "other", "prefer_not_to_say"] },
     dateOfBirth: { type: Date },
@@ -152,7 +155,7 @@ const userSchema = new Schema(
 // ─────────────────────────────────────────
 // Indexes
 // ─────────────────────────────────────────
- 
+
 userSchema.index({ role: 1 });
 userSchema.index({ organizationId: 1 });
 userSchema.index({ "subscription.plan": 1 });
@@ -173,9 +176,9 @@ userSchema.virtual("age").get(function () {
 
 // 🔐 Hash password before save
 userSchema.pre("save", async function () {
-  if (!this.isModified("password")) return;
+    if (!this.isModified("password")) return;
 
-  this.password = await bcrypt.hash(this.password, 10);
+    this.password = await bcrypt.hash(this.password, 10);
 });
 
 // 🧠 Role-based validation
